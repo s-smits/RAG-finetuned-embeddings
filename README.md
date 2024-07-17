@@ -36,7 +36,8 @@ Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met b
 
 ## Gebruik
 
-Start het script:```
+Start het script:
+```
 python rag_finetune.py
 ```
 
