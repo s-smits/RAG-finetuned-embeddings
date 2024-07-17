@@ -32,7 +32,6 @@ google-pasta==0.2.0
 gradio==4.38.1
 gradio_client==1.1.0
 grpcio==1.64.1
-grpcio-tools==1.64.1
 h11==0.14.0
 h2==4.1.0
 h5py==3.11.0
@@ -50,7 +49,6 @@ jsonpatch==1.33
 jsonpointer==3.0.0
 jsonschema==4.23.0
 jsonschema-specifications==2023.12.1
-keras==3.4.1
 kiwisolver==1.4.5
 langchain==0.2.8
 langchain-community==0.2.7
@@ -68,7 +66,7 @@ MarkupSafe==2.1.5
 marshmallow==3.21.3
 matplotlib==3.9.1
 mdurl==0.1.2
-ml-dtypes==0.4.0
+ml-dtypes==0.3.1
 mpmath==1.3.0
 multidict==6.0.5
 mypy-extensions==1.0.0
@@ -84,7 +82,7 @@ packaging==24.1
 pandas==2.2.2
 pillow==10.4.0
 portalocker==2.10.1
-protobuf==5.27.2
+protobuf==4.23.4
 pydantic==2.8.2
 pydantic_core==2.20.1
 pydub==0.25.1
@@ -98,7 +96,6 @@ python-multipart==0.0.9
 pytz==2024.1
 PyYAML==6.0.1
 qdrant-client==1.10.1
-rank-bm25==0.2.2
 rapidfuzz==3.9.4
 referencing==0.35.1
 regex==2024.5.15
@@ -118,12 +115,12 @@ SQLAlchemy==2.0.31
 starlette==0.37.2
 sympy==1.13.0
 tenacity==8.5.0
-tensorboard==2.17.0
-tensorboard-data-server==0.7.2
-tensorflow==2.17.0
+tensorboard==2.16.1
+tensorflow==2.16.1
 tensorflow-io-gcs-filesystem==0.37.1
 termcolor==2.4.0
-tf_keras==2.17.0
+tf_keras==2.16.0
+keras
 threadpoolctl==3.5.0
 tiktoken==0.7.0
 tokenizers==0.19.1
@@ -131,7 +128,7 @@ tomlkit==0.12.0
 toolz==0.12.1
 torch==2.3.1
 tqdm==4.66.4
-transformers @ git+https://github.com/huggingface/transformers.git@88e0813d8dde26b43a427c5d1a519f0e6ce3392f
+transformers
 typer==0.12.3
 typing-inspect==0.9.0
 typing_extensions==4.12.2

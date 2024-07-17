@@ -7,9 +7,10 @@ import numpy as np
 from PyPDF2 import PdfReader
 from sentence_transformers import SentenceTransformer
 from langchain_community.vectorstores import Qdrant
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import ChatOpenAI
-from langchain_huggingface import HuggingFaceEmbeddings
+# from langchain_huggingface import HuggingFaceEmbeddings
 import gradio as gr
 import keras
 from keras.layers import Input
@@ -18,12 +19,13 @@ from langchain_core.documents import Document
 from langchain.embeddings.base import Embeddings
 from tqdm.auto import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
-from rank_bm25 import BM25Okapi
 import optuna
 from optuna.trial import Trial
 from optuna.pruners import MedianPruner
 from optuna.samplers import TPESampler
 from keras import models
+import bm25s
+import Stemmer
 
 # Global variables
 qdrant_collection = None
@@ -31,6 +33,7 @@ fine_tuned_embeddings = None
 all_documents = []
 txt_files = []
 is_fine_tuned = False
+bm25s_retriever = None
 
 def extract_text_from_pdf(pdf_path):
     reader = PdfReader(pdf_path)
@@ -152,8 +155,24 @@ class FineTunedHuggingFaceEmbeddings(Embeddings):
             print(f"Error in embed_query: {str(e)}")
             raise
 
+def initialize_bm25s(documents):
+    global bm25s_retriever
+    
+    # Create a stemmer
+    stemmer = Stemmer.Stemmer("english")
+    
+    # Tokenize the corpus
+    corpus = [doc["text"] for doc in documents]
+    corpus_tokens = bm25s.tokenize(corpus, stopwords="en", stemmer=stemmer)
+    
+    # Create and index the BM25 model
+    bm25s_retriever = bm25s.BM25()
+    bm25s_retriever.index(corpus_tokens)
+    
+    return bm25s_retriever
+
 def process_uploaded_pdfs(pdf_files):
-    global all_documents, txt_files, is_fine_tuned
+    global all_documents, txt_files, is_fine_tuned, bm25s_retriever
     
     try:
         print("Starting process_uploaded_pdfs")
@@ -187,6 +206,9 @@ def process_uploaded_pdfs(pdf_files):
                 "metadata": {"source": txt_file_name}
             } for chunk in chunks])
 
+        # Initialize bm25s after processing all documents
+        bm25s_retriever = initialize_bm25s(all_documents)
+
         print("process_uploaded_pdfs completed successfully")
         return f"Processed {len(pdf_files)} PDFs. Created {len(all_documents)} chunks. Click 'Start Fine-tuning' to continue.", gr.update(interactive=True)
     except Exception as e:
@@ -194,7 +216,7 @@ def process_uploaded_pdfs(pdf_files):
         print(f"Error in process_uploaded_pdfs: {error_details}")
         return f"Error processing PDFs: {str(e)}\n\nFull error details:\n{error_details}", gr.update(interactive=False)
 
-def start_fine_tuning(progress=gr.Progress()):
+def start_fine_tuning(num_trials, progress=gr.Progress()):
     global qdrant_collection, fine_tuned_embeddings, is_fine_tuned
 
     try:
@@ -207,8 +229,6 @@ def start_fine_tuning(progress=gr.Progress()):
         progress(0.1, desc="Loading model")
         if not os.path.exists(local_model_path):
             SentenceTransformer(model_name).save(local_model_path)
-
-        n_trials = 10
 
         # Capture Optuna's output
         optuna_output = []
@@ -226,8 +246,8 @@ def start_fine_tuning(progress=gr.Progress()):
             optuna_output.append(f"Best params: {best_trial.params}")
             
             # Adjust progress calculation
-            optimization_progress = 0.1 + (0.7 * (trial.number + 1) / n_trials)
-            progress(optimization_progress, desc=f"Optimizing embeddings: Trial {trial.number + 1}/{n_trials}")
+            optimization_progress = 0.1 + (0.7 * (trial.number + 1) / num_trials)
+            progress(optimization_progress, desc=f"Optimizing embeddings: Trial {trial.number + 1}/{num_trials}")
             
             return "\n".join(optuna_output)
 
@@ -235,7 +255,7 @@ def start_fine_tuning(progress=gr.Progress()):
         fine_tuned_embeddings = FineTunedHuggingFaceEmbeddings(
             model_name=local_model_path,
             documents=all_documents,
-            n_trials=n_trials,
+            n_trials=num_trials,
             model_kwargs={"device": "cpu"},
             optuna_callback=optuna_callback
         )
@@ -317,12 +337,15 @@ Answer:"""
         return {"Main Response": f"Error generating response: {str(e)}\n\nFull error details:\n{error_details}"}
 
 def evaluate_retrieval(embeddings_model, documents, queries, top_k=5):
-    # Create BM25 index for lexical search baseline
-    corpus = [doc["text"] for doc in documents]
-    bm25 = BM25Okapi(corpus)
+    global bm25s_retriever
+    
+    if bm25s_retriever is None:
+        bm25s_retriever = initialize_bm25s(documents)
     
     embedding_hits = 0
-    bm25_hits = 0
+    bm25s_hits = 0
+    
+    stemmer = Stemmer.Stemmer("english")
     
     for query in queries:
         # Semantic search
@@ -330,19 +353,21 @@ def evaluate_retrieval(embeddings_model, documents, queries, top_k=5):
         semantic_results = qdrant_collection.similarity_search_by_vector(query_embedding, k=top_k)
         semantic_docs = [doc.page_content for doc in semantic_results]
         
-        # BM25 search
-        bm25_results = bm25.get_top_n(query.split(), corpus, n=top_k)
+        # BM25S search
+        query_tokens = bm25s.tokenize(query, stemmer=stemmer)
+        bm25s_results, _ = bm25s_retriever.retrieve(query_tokens, k=top_k)
+        bm25s_docs = [documents[doc_id]["text"] for doc_id in bm25s_results[0]]
         
         # Compare results (assuming relevant docs contain the query terms)
         embedding_hits += sum(1 for doc in semantic_docs if any(term in doc.lower() for term in query.lower().split()))
-        bm25_hits += sum(1 for doc in bm25_results if any(term in doc.lower() for term in query.lower().split()))
+        bm25s_hits += sum(1 for doc in bm25s_docs if any(term in doc.lower() for term in query.lower().split()))
     
     embedding_precision = embedding_hits / (len(queries) * top_k)
-    bm25_precision = bm25_hits / (len(queries) * top_k)
+    bm25s_precision = bm25s_hits / (len(queries) * top_k)
     
     return {
         "embedding_precision": embedding_precision,
-        "bm25_precision": bm25_precision
+        "bm25s_precision": bm25s_precision
     }
 
 # Setup
@@ -356,6 +381,9 @@ with gr.Blocks() as iface:
     with gr.Row():
         pdf_files = gr.File(file_count="multiple", label="Upload PDF files")
         process_btn = gr.Button("Process PDFs")
+
+    with gr.Row():
+        num_trials = gr.Number(value=10, label="Number of Trials", minimum=1, maximum=100, step=1)
         fine_tune_btn = gr.Button("Start Fine-tuning", interactive=False)
     
     status_output = gr.Textbox(label="Status", lines=10)
@@ -396,8 +424,11 @@ with gr.Blocks() as iface:
         status, submit_btn_update = output
         return status, submit_btn_update
 
+    def start_fine_tuning_with_trials(num_trials, progress=gr.Progress()):
+        return start_fine_tuning(int(num_trials), progress)
+
     process_btn.click(process_uploaded_pdfs, inputs=[pdf_files], outputs=[status_output, fine_tune_btn])
-    fine_tune_btn.click(start_fine_tuning, outputs=[status_output, submit_btn])
+    fine_tune_btn.click(start_fine_tuning_with_trials, inputs=[num_trials], outputs=[status_output, submit_btn])
     submit_btn.click(update_outputs, inputs=[question_input, include_raw_text], outputs=[main_output, raw_text_output])
 
 if __name__ == "__main__":
