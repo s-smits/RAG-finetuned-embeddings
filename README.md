@@ -43,8 +43,8 @@ python rag_finetune.py
 Dit opent een Gradio-interface waar je:
 1. PDF-bestanden kunt uploaden
 2. De PDF's kunt verwerken
-3. Het fijnafstemmen van de embeddings kunt starten
-4. Vragen kunt stellen op basis van de verwerkte documenten
+3. Het fine-tunen van de embeddings kunt starten
+4. Vragen kunt stellen op basis van de verwerkte documenten terwijl de gefine-tunede embeddings gebruikt worden.
 
 ## Vereisten
 
