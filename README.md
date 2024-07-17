@@ -6,8 +6,8 @@ Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met b
 
 1. Kloon de repository en navigeer naar de projectmap:
    ```
-   git clone <repository-url>
-   cd <project-directory>
+   git clone https://github.com/s-smits/qdrant-demo
+   cd qdrant-demo
    ```
 
 2. Maak een virtuele omgeving aan met de naam `qdrant_demo` en activeer deze:
