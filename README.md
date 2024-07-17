@@ -1,4 +1,4 @@
-# Verfijnde RAG met Lokale Embeddings, Qdrant en OpenAI LLM
+# Fine-tuned RAG met Lokale Embeddings, Qdrant en OpenAI LLM
 
 Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met behulp van fine-tuned lokale embeddings, Qdrant vectoropslag en OpenAI's GPT-4 taalmodel.
 
