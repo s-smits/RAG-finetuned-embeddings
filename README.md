@@ -54,3 +54,7 @@ Zie `requirements.txt` voor een volledige lijst van dependencies.
 ## Licentie
 
 [MIT-licentie](LICENSE)
+
+## Demo
+<video src="https://github.com/user-attachments/assets/b854534c-fcd4-44af-b907-94c309552709" controls="controls" style="max-width: 730px;">
+</video>
