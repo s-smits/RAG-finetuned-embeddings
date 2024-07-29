@@ -38,7 +38,7 @@ Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met b
 
 Start het script:
 ```
-python rag_finetune.py
+   python rag_finetune.py
 ```
 
 Dit opent een Gradio-interface waar je:
