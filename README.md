@@ -27,12 +27,12 @@ Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met b
    pip install -r requirements.txt
    ```
 
-4. Maak een `.env` bestand aan in de hoofdmap van het project en voeg je OpenAI API-sleutel toe:
+4. Hernoem `.env.example` naar `.env` in de hoofdmap van het project en voeg je OpenAI API-sleutel toe:
    ```
    OPENAI_API_KEY=jouw_api_sleutel_hier
    ```
 
-   Zorg ervoor dat je je eigen OpenAI API-sleutel hier invoert. Deze sleutel is noodzakelijk voor het gebruik van de OpenAI GPT-4 model in dit project.
+   Zorg ervoor dat je je eigen OpenAI API-sleutel hier invoert. Deze sleutel is noodzakelijk voor het gebruik van GPT-4o-mini in dit project.
 
 ## Gebruik
 
