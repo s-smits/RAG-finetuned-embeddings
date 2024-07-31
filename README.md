@@ -7,7 +7,7 @@ Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met b
 1. Clone de repository en navigeer naar de projectmap:
    ```
    git clone https://github.com/s-smits/RAG-finetuned-embeddings
-   cd qdrant-demo
+   cd RAG-finetuned-embeddings
    ```
 
 2. Maak een virtuele omgeving aan met de naam `venv_RAG_finetuned_embeddings` en activeer deze:
