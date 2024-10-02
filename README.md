@@ -1,59 +1,59 @@
-# Fine-tuned RAG met lokale Embeddings, Qdrant en OpenAI LLM
+# Fine-tuned RAG with Local Embeddings, Qdrant, and OpenAI LLM
 
-Dit project implementeert een Retrieval-Augmented Generation (RAG) systeem met behulp van fine-tuned lokale embeddings, Qdrant vectoropslag en OpenAI's GPT-4 taalmodel.
+This project implements a Retrieval-Augmented Generation (RAG) system using fine-tuned local embeddings, Qdrant vector storage, and OpenAI's GPT-4 language model.
 
-## Installatie
+## Installation
 
-1. Clone de repository en navigeer naar de projectmap:
+1. Clone the repository and navigate to the project folder:
    ```
    git clone https://github.com/s-smits/RAG-finetuned-embeddings
    cd RAG-finetuned-embeddings
    ```
 
-2. Maak een virtuele omgeving aan met de naam `venv_RAG_finetuned_embeddings` en activeer deze:
-   - Voor macOS en Linux:
+2. Create a virtual environment named `venv_RAG_finetuned_embeddings` and activate it:
+   - For macOS and Linux:
      ```
-     python3 -m venv_RAG_finetuned_embeddings
+     python3 -m venv venv_RAG_finetuned_embeddings
      source venv_RAG_finetuned_embeddings/bin/activate
      ```
-   - Voor Windows:
+   - For Windows:
      ```
      python -m venv venv_RAG_finetuned_embeddings
      venv_RAG_finetuned_embeddings\Scripts\activate
      ```
 
-3. Installeer de vereiste dependencies:
+3. Install the required dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-4. Hernoem `.env.example` naar `.env` in de hoofdmap van het project en voeg je OpenAI API-sleutel toe:
+4. Rename `.env.example` to `.env` in the project's root directory and add your OpenAI API key:
    ```
-   OPENAI_API_KEY=jouw_api_sleutel_hier
+   OPENAI_API_KEY=your_api_key_here
    ```
 
-   Zorg ervoor dat je je eigen OpenAI API-sleutel hier invoert. Deze sleutel is noodzakelijk voor het gebruik van GPT-4o-mini in dit project.
+   Make sure to enter your own OpenAI API key here. This key is necessary for using GPT-4 in this project.
 
-## Gebruik
+## Usage
 
-Start het script:
+Start the script:
 ```
    python rag_finetune.py
 ```
 
-Dit opent een Gradio-interface waar je:
-1. PDF-bestanden kunt uploaden
-2. De PDF's kunt verwerken
-3. Het fine-tunen van de embeddings kunt starten
-4. Vragen kunt stellen op basis van de verwerkte documenten terwijl de gefine-tunede embeddings gebruikt worden.
+This opens a Gradio interface where you can:
+1. Upload PDF files
+2. Process the PDFs
+3. Start fine-tuning the embeddings
+4. Ask questions based on the processed documents while using the fine-tuned embeddings
 
-## Vereisten
+## Requirements
 
-Zie `requirements.txt` voor een volledige lijst van dependencies.
+See `requirements.txt` for a full list of dependencies.
 
-## Licentie
+## License
 
-[MIT-licentie](LICENSE)
+[MIT License](LICENSE)
 
 ## Demo
 <video src="https://github.com/user-attachments/assets/b854534c-fcd4-44af-b907-94c309552709" controls="controls" style="max-width: 730px;">
