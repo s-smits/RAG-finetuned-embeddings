@@ -1,6 +1,6 @@
 # Fine-tuned RAG with Local Embeddings, Qdrant, and OpenAI LLM
 
-This project implements a Retrieval-Augmented Generation (RAG) system using fine-tuned local embeddings, Qdrant vector storage, and OpenAI's GPT-4 language model.
+This project implements a Retrieval-Augmented Generation (RAG) system using fine-tuned local embeddings, Qdrant vector storage, GPT-4o.
 
 ## Installation
 
